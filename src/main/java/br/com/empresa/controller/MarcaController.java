@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.empresa.entity.dto.MarcaDTO;
+import br.com.empresa.entity.dto.MarcaPatrimonioDTO;
 import br.com.empresa.service.MarcaService;
 
 @RestController
@@ -27,8 +28,13 @@ public class MarcaController {
 	}
 	
 	@GetMapping("/marcas/{id}")
-	public MarcaDTO marca(@PathVariable("id") Long id) {
+	public MarcaDTO buscarMarcaPorId(@PathVariable("id") Long id) {
 		return service.buscarMarcaPorId(id);
+	}
+	
+	@GetMapping("/marcas/{id}/patrimonios")
+	public MarcaPatrimonioDTO buscarPatrimoniosPorIdMarca(@PathVariable("id") Long id) {
+		return service.buscarPatrimoniosPorIdMarca(id);
 	}
 	
 	@PostMapping("/marcas")

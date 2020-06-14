@@ -11,6 +11,7 @@ import org.springframework.util.CollectionUtils;
 
 import br.com.empresa.entity.Marca;
 import br.com.empresa.entity.dto.MarcaDTO;
+import br.com.empresa.entity.dto.MarcaPatrimonioDTO;
 
 @Service
 public class MarcaBO {
@@ -27,6 +28,16 @@ public class MarcaBO {
 		}
 
 		return listaMarcasDTO;
+	}
+	
+	public MarcaPatrimonioDTO converteMarcaPatrimonioDTO(Marca marca) {
+		MarcaPatrimonioDTO marcaPatrimonioDTO = null;
+		
+		if (marca != null) {
+			marcaPatrimonioDTO = modelMapper.map(marca, MarcaPatrimonioDTO.class);
+		}
+		
+		return marcaPatrimonioDTO;
 	}
 
 	public MarcaDTO converterMarcaParaDTO(Marca marca) {

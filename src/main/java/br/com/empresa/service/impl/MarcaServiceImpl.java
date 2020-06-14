@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import br.com.empresa.bo.MarcaBO;
 import br.com.empresa.entity.Marca;
 import br.com.empresa.entity.dto.MarcaDTO;
+import br.com.empresa.entity.dto.MarcaPatrimonioDTO;
 import br.com.empresa.repository.MarcaRepository;
 import br.com.empresa.service.MarcaService;
 import br.com.empresa.util.ConstanteUtils;
@@ -47,15 +48,15 @@ public class MarcaServiceImpl implements MarcaService {
 	public MarcaDTO inserir(MarcaDTO marcaDTO) {
 		Marca marca = bo.converterDTOParaMarca(marcaDTO);
 		
-		return marca != null ? bo.converterMarcaParaDTO(repository.save(marca)) : null;
+		return marca != null && isMarcaValida(marcaDTO, bo.converterMarcaParaDTO(marca))
+				? bo.converterMarcaParaDTO(repository.save(marca)): null;
 	}
 	
 	@Override
 	public MarcaDTO alterar(Long id, MarcaDTO marcaDTO) {
 		MarcaDTO marcaAtualDTO = buscarMarcaPorId(id);
 		
-		if (marcaDTO != null && marcaDTO.getNome() != null && !marcaDTO.getNome().trim().isEmpty()
-				&& marcaAtualDTO != null && repository.findMarcaByNome(marcaDTO.getNome().trim()) == null) {
+		if (isMarcaValida(marcaDTO, marcaAtualDTO)) {
 			Marca marca = bo.converterDTOParaMarca(marcaDTO);
 			marca.setId(id);
 			
@@ -67,17 +68,33 @@ public class MarcaServiceImpl implements MarcaService {
 		return marcaDTO;
 	}
 
+	private boolean isMarcaValida(MarcaDTO marcaDTO, MarcaDTO marcaAtualDTO) {
+		return marcaDTO != null && marcaDTO.getNome() != null && !marcaDTO.getNome().trim().isEmpty()
+				&& marcaAtualDTO != null && repository.findMarcaByNome(marcaDTO.getNome().trim()) == null;
+	}
+
 	@Override
 	public String excluir(Long id) {
 		String msg = "Marca não excluída.";
 		
-		if(buscarMarcaPorId(id) != null) {
+		if(repository.findById(id) != null) {
 			repository.deleteById(id);
 			
 			msg = "Marca excluída com sucesso.";
 		}
 		
 		return msg;
+	}
+
+	@Override
+	public MarcaPatrimonioDTO buscarPatrimoniosPorIdMarca(Long idMarca) {
+		Optional<Marca> marcaOpt = null;
+
+		if (idMarca != null && idMarca > ConstanteUtils.MENOR_ID_BD_VALIDO) {
+			marcaOpt = repository.findById(idMarca);
+		}
+		
+		return marcaOpt.isPresent() ? bo.converteMarcaPatrimonioDTO(marcaOpt.get()) : null;
 	}
 
 }
